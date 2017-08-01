@@ -1,3 +1,8 @@
+# mac 下的一些用户信息
+xcuserdata
+project.xcworkspace
+.DS_Store
+
 # Object files
 *.o
 *.ko
