@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		596BACA11F3054A3004B4590 /* lsproto.c in Sources */ = {isa = PBXBuildFile; fileRef = 596BAC9D1F3054A3004B4590 /* lsproto.c */; };
 		596BACA21F3054A3004B4590 /* sproto.c in Sources */ = {isa = PBXBuildFile; fileRef = 596BAC9F1F3054A3004B4590 /* sproto.c */; };
+		598CA0341F3C4961003060E8 /* lua_cmsgpack.c in Sources */ = {isa = PBXBuildFile; fileRef = 598CA0331F3C4961003060E8 /* lua_cmsgpack.c */; };
 		8400929F1CCF43D600F89A56 /* tolua.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8400929E1CCF43D600F89A56 /* tolua.h */; };
 		840092A11CCF43D600F89A56 /* tolua.m in Sources */ = {isa = PBXBuildFile; fileRef = 840092A01CCF43D600F89A56 /* tolua.m */; };
 		840092A81CCF44F800F89A56 /* libluajit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 840092A71CCF44F800F89A56 /* libluajit.a */; };
@@ -56,6 +57,7 @@
 		596BAC9E1F3054A3004B4590 /* msvcint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = msvcint.h; sourceTree = "<group>"; };
 		596BAC9F1F3054A3004B4590 /* sproto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sproto.c; sourceTree = "<group>"; };
 		596BACA01F3054A3004B4590 /* sproto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sproto.h; sourceTree = "<group>"; };
+		598CA0331F3C4961003060E8 /* lua_cmsgpack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lua_cmsgpack.c; sourceTree = "<group>"; };
 		8400929B1CCF43D600F89A56 /* libtolua.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtolua.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8400929E1CCF43D600F89A56 /* tolua.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tolua.h; sourceTree = "<group>"; };
 		840092A01CCF43D600F89A56 /* tolua.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = tolua.m; sourceTree = "<group>"; };
@@ -128,6 +130,15 @@
 			path = ../../sproto;
 			sourceTree = "<group>";
 		};
+		598CA0321F3C4960003060E8 /* msgpack */ = {
+			isa = PBXGroup;
+			children = (
+				598CA0331F3C4961003060E8 /* lua_cmsgpack.c */,
+			);
+			name = msgpack;
+			path = ../../msgpack;
+			sourceTree = "<group>";
+		};
 		840092921CCF43D600F89A56 = {
 			isa = PBXGroup;
 			children = (
@@ -147,6 +158,7 @@
 		8400929D1CCF43D600F89A56 /* tolua */ = {
 			isa = PBXGroup;
 			children = (
+				598CA0321F3C4960003060E8 /* msgpack */,
 				596BAC9C1F3054A3004B4590 /* sproto */,
 				840092BD1CCF45A800F89A56 /* luasocket */,
 				840092B31CCF455100F89A56 /* cjson */,
@@ -277,6 +289,7 @@
 				840092EE1CCF45A800F89A56 /* udp.c in Sources */,
 				840092E41CCF45A800F89A56 /* except.c in Sources */,
 				840092AC1CCF451400F89A56 /* lpeg.c in Sources */,
+				598CA0341F3C4961003060E8 /* lua_cmsgpack.c in Sources */,
 				840092BB1CCF455100F89A56 /* lua_cjson.c in Sources */,
 				840092B01CCF452100F89A56 /* struct.c in Sources */,
 				840092B21CCF452700F89A56 /* tolua.c in Sources */,
