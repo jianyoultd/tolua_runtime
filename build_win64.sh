@@ -45,3 +45,5 @@ gcc -m64 -O2 -std=gnu99 -shared \
  -Imsgpack \
  -lws2_32 \
  -Wl,--whole-archive window/x86_64/libluajit.a -Wl,--no-whole-archive -static-libgcc -static-libstdc++
+ 
+ read -p "hold on ..."
