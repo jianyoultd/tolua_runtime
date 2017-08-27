@@ -1,4 +1,4 @@
-# tolua_runtime
+## tolua_runtime
 **Build**<br>
 pc: build_win32.sh build_win64.h  (mingw + luajit2.0.4) <br>
 android: build_arm.sh build_x86.sh (mingw + luajit2.0.4) <br>
@@ -12,7 +12,7 @@ https://github.com/topameng/tolua_runtime/wiki<br>
 配置好的Msys2下载<br>
 https://pan.baidu.com/s/1c2JzvDQ<br>
 
-# Libs
+## Libs
 **cjson**<br>
 https://github.com/mpx/lua-cjson<br>
 **protoc-gen-lua**<br>
@@ -23,3 +23,24 @@ https://github.com/diegonehab/luasocket<br>
 http://www.inf.puc-rio.br/~roberto/struct/<br>
 **lpeg**<br>
 http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html
+
+
+
+## iOS 版本添加拓展包并打包流程
+
+- 将你需要添加的拓展包的 C 代码文件夹（如 cjson、sproto）放在项目要目录下
+
+- 使用 mac 操作系统 ，进入 iOS 目录
+
+- 确保已经装了 xcode 的情况下，双击 tolua.xcodeproj
+
+- 选择 tolua 目录，并右键，选择 “Add Files to tolua”
+
+![pic](./images/pic1.png)
+
+- 选择你要添加的库
+
+- 最后选择 Generic iOS Device ，并点击左边的 三角形运行即可
+
+![pic](./images/pic2.png)
+
