@@ -15,7 +15,7 @@
 
 /* Allows a preprocessor directive to override MAX_NESTING */
 #ifndef LUACMSGPACK_MAX_NESTING
-    #define LUACMSGPACK_MAX_NESTING  16 /* Max tables nesting. */
+#define LUACMSGPACK_MAX_NESTING  16 /* Max tables nesting. */
 #endif
 
 /* Check if float or double can be an integer without loss of precision */
@@ -26,15 +26,15 @@
 
 /* If size of pointer is equal to a 4 byte integer, we're on 32 bits. */
 #if UINTPTR_MAX == UINT_MAX
-    #define BITS_32 1
+#define BITS_32 1
 #else
-    #define BITS_32 0
+#define BITS_32 0
 #endif
 
 #if BITS_32
-    #define lua_pushunsigned(L, n) lua_pushnumber(L, n)
+#define lua_pushunsigned(L, n) lua_pushnumber(L, n)
 #else
-    #define lua_pushunsigned(L, n) lua_pushinteger(L, n)
+#define lua_pushunsigned(L, n) lua_pushinteger(L, n)
 #endif
 
 /* =============================================================================
@@ -68,11 +68,11 @@
  * The performance difference should be acceptable. */
 void memrevifle(void *ptr, size_t len) {
     unsigned char   *p = (unsigned char *)ptr,
-                    *e = (unsigned char *)p+len-1,
-                    aux;
+    *e = (unsigned char *)p+len-1,
+    aux;
     int test = 1;
     unsigned char *testp = (unsigned char*) &test;
-
+    
     if (testp[0] == 0) return; /* Big endian, nothing to do. */
     len /= 2;
     while(len--) {
@@ -98,18 +98,18 @@ typedef struct mp_buf {
 void *mp_realloc(lua_State *L, void *target, size_t osize,size_t nsize) {
     void *(*local_realloc) (void *, void *, size_t osize, size_t nsize) = NULL;
     void *ud;
-
+    
     local_realloc = lua_getallocf(L, &ud);
-
+    
     return local_realloc(ud, target, osize, nsize);
 }
 
 mp_buf *mp_buf_new(lua_State *L) {
     mp_buf *buf = NULL;
-
+    
     /* Old size = 0; new size = sizeof(*buf) */
     buf = (mp_buf*)mp_realloc(L, NULL, 0, sizeof(*buf));
-
+    
     buf->b = NULL;
     buf->len = buf->free = 0;
     return buf;
@@ -118,7 +118,7 @@ mp_buf *mp_buf_new(lua_State *L) {
 void mp_buf_append(lua_State *L, mp_buf *buf, const unsigned char *s, size_t len) {
     if (buf->free < len) {
         size_t newsize = (buf->len+len)*2;
-
+        
         buf->b = (unsigned char*)mp_realloc(L, buf->b, buf->len + buf->free, newsize);
         buf->free = newsize - buf->len;
     }
@@ -163,10 +163,10 @@ void mp_cur_init(mp_cur *cursor, const unsigned char *s, size_t len) {
  * is very common across the code so we have a macro to make the code look
  * a bit simpler. */
 #define mp_cur_need(_c,_len) do { \
-    if (_c->left < _len) { \
-        _c->err = MP_CUR_ERROR_EOF; \
-        return; \
-    } \
+if (_c->left < _len) { \
+_c->err = MP_CUR_ERROR_EOF; \
+return; \
+} \
 } while(0)
 
 /* ------------------------- Low level MP encoding -------------------------- */
@@ -174,7 +174,7 @@ void mp_cur_init(mp_cur *cursor, const unsigned char *s, size_t len) {
 void mp_encode_bytes(lua_State *L, mp_buf *buf, const unsigned char *s, size_t len) {
     unsigned char hdr[5];
     int hdrlen;
-
+    
     if (len < 32) {
         hdr[0] = 0xa0 | (len&0xff); /* fix raw */
         hdrlen = 1;
@@ -203,7 +203,7 @@ void mp_encode_bytes(lua_State *L, mp_buf *buf, const unsigned char *s, size_t l
 void mp_encode_double(lua_State *L, mp_buf *buf, double d) {
     unsigned char b[9];
     float f = d;
-
+    
     assert(sizeof(f) == 4 && sizeof(d) == 8);
     if (d == (double)f) {
         b[0] = 0xca;    /* float IEEE 754 */
@@ -221,7 +221,7 @@ void mp_encode_double(lua_State *L, mp_buf *buf, double d) {
 void mp_encode_int(lua_State *L, mp_buf *buf, int64_t n) {
     unsigned char b[9];
     int enclen;
-
+    
     if (n >= 0) {
         if (n <= 127) {
             b[0] = n & 0x7f;    /* positive fixnum */
@@ -293,7 +293,7 @@ void mp_encode_int(lua_State *L, mp_buf *buf, int64_t n) {
 void mp_encode_array(lua_State *L, mp_buf *buf, int64_t n) {
     unsigned char b[5];
     int enclen;
-
+    
     if (n <= 15) {
         b[0] = 0x90 | (n & 0xf);    /* fix array */
         enclen = 1;
@@ -316,7 +316,7 @@ void mp_encode_array(lua_State *L, mp_buf *buf, int64_t n) {
 void mp_encode_map(lua_State *L, mp_buf *buf, int64_t n) {
     unsigned char b[5];
     int enclen;
-
+    
     if (n <= 15) {
         b[0] = 0x80 | (n & 0xf);    /* fix map */
         enclen = 1;
@@ -341,7 +341,7 @@ void mp_encode_map(lua_State *L, mp_buf *buf, int64_t n) {
 void mp_encode_lua_string(lua_State *L, mp_buf *buf) {
     size_t len;
     const char *s;
-
+    
     s = lua_tolstring(L,-1,&len);
     mp_encode_bytes(L,buf,(const unsigned char*)s,len);
 }
@@ -366,7 +366,7 @@ void mp_encode_lua_integer(lua_State *L, mp_buf *buf) {
  * for Lua < 5.3 */
 void mp_encode_lua_number(lua_State *L, mp_buf *buf) {
     lua_Number n = lua_tonumber(L,-1);
-
+    
     if (IS_INT64_EQUIVALENT(n)) {
         mp_encode_lua_integer(L, buf);
     } else {
@@ -383,7 +383,7 @@ void mp_encode_lua_table_as_array(lua_State *L, mp_buf *buf, int level) {
 #else
     size_t len = lua_rawlen(L,-1), j;
 #endif
-
+    
     mp_encode_array(L,buf,len);
     for (j = 1; j <= len; j++) {
         lua_pushnumber(L,j);
@@ -395,7 +395,7 @@ void mp_encode_lua_table_as_array(lua_State *L, mp_buf *buf, int level) {
 /* Convert a lua table into a message pack key-value map. */
 void mp_encode_lua_table_as_map(lua_State *L, mp_buf *buf, int level) {
     size_t len = 0;
-
+    
     /* First step: count keys into table. No other way to do it with the
      * Lua API, we need to iterate a first time. Note that an alternative
      * would be to do a single run, and then hack the buffer to insert the
@@ -405,7 +405,7 @@ void mp_encode_lua_table_as_map(lua_State *L, mp_buf *buf, int level) {
         lua_pop(L,1); /* remove value, keep key for next iteration. */
         len++;
     }
-
+    
     /* Step two: actually encoding of the map. */
     mp_encode_map(L,buf,len);
     lua_pushnil(L);
@@ -427,12 +427,12 @@ int table_is_an_array(lua_State *L) {
 #else
     lua_Integer n;
 #endif
-
+    
     /* Stack top on function entry */
     int stacktop;
-
+    
     stacktop = lua_gettop(L);
-
+    
     lua_pushnil(L);
     while(lua_next(L,-2)) {
         /* Stack: ... key value */
@@ -442,12 +442,12 @@ int table_is_an_array(lua_State *L) {
         if ((LUA_TNUMBER != lua_type(L,-1)) || (n = lua_tonumber(L, -1)) <= 0 ||
             !IS_INT_EQUIVALENT(n))
 #else
-        if (!lua_isinteger(L,-1) || (n = lua_tointeger(L, -1)) <= 0)
+            if (!lua_isinteger(L,-1) || (n = lua_tointeger(L, -1)) <= 0)
 #endif
-        {
-            lua_settop(L, stacktop);
-            return 0;
-        }
+            {
+                lua_settop(L, stacktop);
+                return 0;
+            }
         max = (n > max ? n : max);
         count++;
     }
@@ -472,33 +472,33 @@ void mp_encode_lua_table(lua_State *L, mp_buf *buf, int level) {
 
 void mp_encode_lua_null(lua_State *L, mp_buf *buf) {
     unsigned char b[1];
-
+    
     b[0] = 0xc0;
     mp_buf_append(L,buf,b,1);
 }
 
 void mp_encode_lua_type(lua_State *L, mp_buf *buf, int level) {
     int t = lua_type(L,-1);
-
+    
     /* Limit the encoding of nested tables to a specified maximum depth, so that
      * we survive when called against circular references in tables. */
     if (t == LUA_TTABLE && level == LUACMSGPACK_MAX_NESTING) t = LUA_TNIL;
     switch(t) {
-    case LUA_TSTRING: mp_encode_lua_string(L,buf); break;
-    case LUA_TBOOLEAN: mp_encode_lua_bool(L,buf); break;
-    case LUA_TNUMBER:
-    #if LUA_VERSION_NUM < 503
-        mp_encode_lua_number(L,buf); break;
-    #else
-        if (lua_isinteger(L, -1)) {
-            mp_encode_lua_integer(L, buf);
-        } else {
-            mp_encode_lua_number(L, buf);
-        }
-        break;
-    #endif
-    case LUA_TTABLE: mp_encode_lua_table(L,buf,level); break;
-    default: mp_encode_lua_null(L,buf); break;
+        case LUA_TSTRING: mp_encode_lua_string(L,buf); break;
+        case LUA_TBOOLEAN: mp_encode_lua_bool(L,buf); break;
+        case LUA_TNUMBER:
+#if LUA_VERSION_NUM < 503
+            mp_encode_lua_number(L,buf); break;
+#else
+            if (lua_isinteger(L, -1)) {
+                mp_encode_lua_integer(L, buf);
+            } else {
+                mp_encode_lua_number(L, buf);
+            }
+            break;
+#endif
+        case LUA_TTABLE: mp_encode_lua_table(L,buf,level); break;
+        default: mp_encode_lua_null(L,buf); break;
     }
     lua_pop(L,1);
 }
@@ -511,20 +511,20 @@ int mp_pack(lua_State *L) {
     int nargs = lua_gettop(L);
     int i;
     mp_buf *buf;
-
+    
     if (nargs == 0)
         return luaL_argerror(L, 0, "MessagePack pack needs input.");
-
+    
     buf = mp_buf_new(L);
     for(i = 1; i <= nargs; i++) {
         /* Copy argument i to top of stack for _encode processing;
          * the encode function pops it from the stack when complete. */
         lua_pushvalue(L, i);
-
+        
         mp_encode_lua_type(L,buf,0);
-
+        
         lua_pushlstring(L,(char*)buf->b,buf->len);
-
+        
         /* Reuse the buffer for the next operation by
          * setting its free count to the total buffer size
          * and the current position to zero. */
@@ -532,7 +532,7 @@ int mp_pack(lua_State *L) {
         buf->len = 0;
     }
     mp_buf_free(L, buf);
-
+    
     /* Concatenate all nargs buffers together */
     lua_concat(L, nargs);
     return 1;
@@ -545,7 +545,7 @@ void mp_decode_to_lua_type(lua_State *L, mp_cur *c);
 void mp_decode_to_lua_array(lua_State *L, mp_cur *c, size_t len) {
     assert(len <= UINT_MAX);
     int index = 1;
-
+    
     lua_newtable(L);
     while(len--) {
         lua_pushnumber(L,index++);
@@ -571,397 +571,397 @@ void mp_decode_to_lua_hash(lua_State *L, mp_cur *c, size_t len) {
  * a Lua type, that is left as the only result on the stack. */
 void mp_decode_to_lua_type(lua_State *L, mp_cur *c) {
     mp_cur_need(c,1);
-
+    
     /* If we return more than 18 elements, we must resize the stack to
      * fit all our return values.  But, there is no way to
      * determine how many objects a msgpack will unpack to up front, so
      * we request a +1 larger stack on each iteration (noop if stack is
      * big enough, and when stack does require resize it doubles in size) */
     luaL_checkstack(L, 1,
-        "too many return values at once; "
-        "use unpack_one or unpack_limit instead.");
-
+                    "too many return values at once; "
+                    "use unpack_one or unpack_limit instead.");
+    
     switch(c->p[0]) {
-    case 0xcc:  /* uint 8 */
-        mp_cur_need(c,2);
-        lua_pushunsigned(L,c->p[1]);
-        mp_cur_consume(c,2);
-        break;
-    case 0xd0:  /* int 8 */
-        mp_cur_need(c,2);
-        lua_pushinteger(L,(signed char)c->p[1]);
-        mp_cur_consume(c,2);
-        break;
-    case 0xcd:  /* uint 16 */
-        mp_cur_need(c,3);
-        lua_pushunsigned(L,
-            (c->p[1] << 8) |
-             c->p[2]);
-        mp_cur_consume(c,3);
-        break;
-    case 0xd1:  /* int 16 */
-        mp_cur_need(c,3);
-        lua_pushinteger(L,(int16_t)
-            (c->p[1] << 8) |
-             c->p[2]);
-        mp_cur_consume(c,3);
-        break;
-    case 0xce:  /* uint 32 */
-        mp_cur_need(c,5);
-        lua_pushunsigned(L,
-            ((uint32_t)c->p[1] << 24) |
-            ((uint32_t)c->p[2] << 16) |
-            ((uint32_t)c->p[3] << 8) |
-             (uint32_t)c->p[4]);
-        mp_cur_consume(c,5);
-        break;
-    case 0xd2:  /* int 32 */
-        mp_cur_need(c,5);
-        lua_pushinteger(L,
-            ((int32_t)c->p[1] << 24) |
-            ((int32_t)c->p[2] << 16) |
-            ((int32_t)c->p[3] << 8) |
-             (int32_t)c->p[4]);
-        mp_cur_consume(c,5);
-        break;
-    case 0xcf:  /* uint 64 */
-        mp_cur_need(c,9);
-        lua_pushunsigned(L,
-            ((uint64_t)c->p[1] << 56) |
-            ((uint64_t)c->p[2] << 48) |
-            ((uint64_t)c->p[3] << 40) |
-            ((uint64_t)c->p[4] << 32) |
-            ((uint64_t)c->p[5] << 24) |
-            ((uint64_t)c->p[6] << 16) |
-            ((uint64_t)c->p[7] << 8) |
-             (uint64_t)c->p[8]);
-        mp_cur_consume(c,9);
-        break;
-    case 0xd3:  /* int 64 */
-        mp_cur_need(c,9);
-#if LUA_VERSION_NUM < 503
-        lua_pushnumber(L,
-#else
-        lua_pushinteger(L,
-#endif
-            ((int64_t)c->p[1] << 56) |
-            ((int64_t)c->p[2] << 48) |
-            ((int64_t)c->p[3] << 40) |
-            ((int64_t)c->p[4] << 32) |
-            ((int64_t)c->p[5] << 24) |
-            ((int64_t)c->p[6] << 16) |
-            ((int64_t)c->p[7] << 8) |
-             (int64_t)c->p[8]);
-        mp_cur_consume(c,9);
-        break;
-    case 0xc0:  /* nil */
-        lua_pushnil(L);
-        mp_cur_consume(c,1);
-        break;
-    case 0xc3:  /* true */
-        lua_pushboolean(L,1);
-        mp_cur_consume(c,1);
-        break;
-    case 0xc2:  /* false */
-        lua_pushboolean(L,0);
-        mp_cur_consume(c,1);
-        break;
-    case 0xca:  /* float */
-        mp_cur_need(c,5);
-        assert(sizeof(float) == 4);
-        {
-            float f;
-            memcpy(&f,c->p+1,4);
-            memrevifle(&f,4);
-            lua_pushnumber(L,f);
+        case 0xcc:  /* uint 8 */
+            mp_cur_need(c,2);
+            lua_pushunsigned(L,c->p[1]);
+            mp_cur_consume(c,2);
+            break;
+        case 0xd0:  /* int 8 */
+            mp_cur_need(c,2);
+            lua_pushinteger(L,(signed char)c->p[1]);
+            mp_cur_consume(c,2);
+            break;
+        case 0xcd:  /* uint 16 */
+            mp_cur_need(c,3);
+            lua_pushunsigned(L,
+                             (c->p[1] << 8) |
+                             c->p[2]);
+            mp_cur_consume(c,3);
+            break;
+        case 0xd1:  /* int 16 */
+            mp_cur_need(c,3);
+            lua_pushinteger(L,(int16_t)
+                            (c->p[1] << 8) |
+                            c->p[2]);
+            mp_cur_consume(c,3);
+            break;
+        case 0xce:  /* uint 32 */
+            mp_cur_need(c,5);
+            lua_pushunsigned(L,
+                             ((uint32_t)c->p[1] << 24) |
+                             ((uint32_t)c->p[2] << 16) |
+                             ((uint32_t)c->p[3] << 8) |
+                             (uint32_t)c->p[4]);
             mp_cur_consume(c,5);
-        }
-        break;
-    case 0xcb:  /* double */
-        mp_cur_need(c,9);
-        assert(sizeof(double) == 8);
-        {
-            double d;
-            memcpy(&d,c->p+1,8);
-            memrevifle(&d,8);
-            lua_pushnumber(L,d);
+            break;
+        case 0xd2:  /* int 32 */
+            mp_cur_need(c,5);
+            lua_pushinteger(L,
+                            ((int32_t)c->p[1] << 24) |
+                            ((int32_t)c->p[2] << 16) |
+                            ((int32_t)c->p[3] << 8) |
+                            (int32_t)c->p[4]);
+            mp_cur_consume(c,5);
+            break;
+        case 0xcf:  /* uint 64 */
+            mp_cur_need(c,9);
+            lua_pushunsigned(L,
+                             ((uint64_t)c->p[1] << 56) |
+                             ((uint64_t)c->p[2] << 48) |
+                             ((uint64_t)c->p[3] << 40) |
+                             ((uint64_t)c->p[4] << 32) |
+                             ((uint64_t)c->p[5] << 24) |
+                             ((uint64_t)c->p[6] << 16) |
+                             ((uint64_t)c->p[7] << 8) |
+                             (uint64_t)c->p[8]);
             mp_cur_consume(c,9);
-        }
-        break;
-    case 0xd9:  /* raw 8 */
-        mp_cur_need(c,2);
-        {
-            size_t l = c->p[1];
-            mp_cur_need(c,2+l);
-            lua_pushlstring(L,(char*)c->p+2,l);
-            mp_cur_consume(c,2+l);
-        }
-        break;
-    case 0xda:  /* raw 16 */
-        mp_cur_need(c,3);
-        {
-            size_t l = (c->p[1] << 8) | c->p[2];
-            mp_cur_need(c,3+l);
-            lua_pushlstring(L,(char*)c->p+3,l);
-            mp_cur_consume(c,3+l);
-        }
-        break;
-    case 0xdb:  /* raw 32 */
-        mp_cur_need(c,5);
-        {
-            size_t l = ((size_t)c->p[1] << 24) |
-                       ((size_t)c->p[2] << 16) |
-                       ((size_t)c->p[3] << 8) |
-                       (size_t)c->p[4];
-            mp_cur_consume(c,5);
-            mp_cur_need(c,l);
-            lua_pushlstring(L,(char*)c->p,l);
-            mp_cur_consume(c,l);
-        }
-        break;
-    case 0xdc:  /* array 16 */
-        mp_cur_need(c,3);
-        {
-            size_t l = (c->p[1] << 8) | c->p[2];
-            mp_cur_consume(c,3);
-            mp_decode_to_lua_array(L,c,l);
-        }
-        break;
-    case 0xdd:  /* array 32 */
-        mp_cur_need(c,5);
-        {
-            size_t l = ((size_t)c->p[1] << 24) |
-                       ((size_t)c->p[2] << 16) |
-                       ((size_t)c->p[3] << 8) |
-                       (size_t)c->p[4];
-            mp_cur_consume(c,5);
-            mp_decode_to_lua_array(L,c,l);
-        }
-        break;
-    case 0xde:  /* map 16 */
-        mp_cur_need(c,3);
-        {
-            size_t l = (c->p[1] << 8) | c->p[2];
-            mp_cur_consume(c,3);
-            mp_decode_to_lua_hash(L,c,l);
-        }
-        break;
-    case 0xdf:  /* map 32 */
-        mp_cur_need(c,5);
-        {
-            size_t l = ((size_t)c->p[1] << 24) |
-                       ((size_t)c->p[2] << 16) |
-                       ((size_t)c->p[3] << 8) |
-                       (size_t)c->p[4];
-            mp_cur_consume(c,5);
-            mp_decode_to_lua_hash(L,c,l);
-        }
-        break;
-    default:    /* types that can't be idenitified by first byte value. */
-        if ((c->p[0] & 0x80) == 0) {   /* positive fixnum */
-            lua_pushunsigned(L,c->p[0]);
-            mp_cur_consume(c,1);
-        } else if ((c->p[0] & 0xe0) == 0xe0) {  /* negative fixnum */
-            lua_pushinteger(L,(signed char)c->p[0]);
-            mp_cur_consume(c,1);
-        } else if ((c->p[0] & 0xe0) == 0xa0) {  /* fix raw */
-            size_t l = c->p[0] & 0x1f;
-            mp_cur_need(c,1+l);
-            lua_pushlstring(L,(char*)c->p+1,l);
-            mp_cur_consume(c,1+l);
-        } else if ((c->p[0] & 0xf0) == 0x90) {  /* fix map */
-            size_t l = c->p[0] & 0xf;
-            mp_cur_consume(c,1);
-            mp_decode_to_lua_array(L,c,l);
-        } else if ((c->p[0] & 0xf0) == 0x80) {  /* fix map */
-            size_t l = c->p[0] & 0xf;
-            mp_cur_consume(c,1);
-            mp_decode_to_lua_hash(L,c,l);
-        } else {
-            c->err = MP_CUR_ERROR_BADFMT;
-        }
-    }
-}
-
-int mp_unpack_full(lua_State *L, int limit, int offset) {
-    size_t len;
-    const char *s;
-    mp_cur c;
-    int cnt; /* Number of objects unpacked */
-    int decode_all = (!limit && !offset);
-
-    s = luaL_checklstring(L,1,&len); /* if no match, exits */
-
-    if (offset < 0 || limit < 0) /* requesting negative off or lim is invalid */
-        return luaL_error(L,
-            "Invalid request to unpack with offset of %d and limit of %d.",
-            offset, len);
-    else if (offset > len)
-        return luaL_error(L,
-            "Start offset %d greater than input length %d.", offset, len);
-
-    if (decode_all) limit = INT_MAX;
-
-    mp_cur_init(&c,(const unsigned char *)s+offset,len-offset);
-
-    /* We loop over the decode because this could be a stream
-     * of multiple top-level values serialized together */
-    for(cnt = 0; c.left > 0 && cnt < limit; cnt++) {
-        mp_decode_to_lua_type(L,&c);
-
-        if (c.err == MP_CUR_ERROR_EOF) {
-            return luaL_error(L,"Missing bytes in input.");
-        } else if (c.err == MP_CUR_ERROR_BADFMT) {
-            return luaL_error(L,"Bad data format in input.");
-        }
-    }
-
-    if (!decode_all) {
-        /* c->left is the remaining size of the input buffer.
-         * subtract the entire buffer size from the unprocessed size
-         * to get our next start offset */
-        int offset = len - c.left;
-        /* Return offset -1 when we have have processed the entire buffer. */
-        lua_pushinteger(L, c.left == 0 ? -1 : offset);
-        /* Results are returned with the arg elements still
-         * in place. Lua takes care of only returning
-         * elements above the args for us.
-         * In this case, we have one arg on the stack
-         * for this function, so we insert our first return
-         * value at position 2. */
-        lua_insert(L, 2);
-        cnt += 1; /* increase return count by one to make room for offset */
-    }
-
-    return cnt;
-}
-
-int mp_unpack(lua_State *L) {
-    return mp_unpack_full(L, 0, 0);
-}
-
-int mp_unpack_one(lua_State *L) {
-    int offset = luaL_optinteger(L, 2, 0);
-    /* Variable pop because offset may not exist */
-    lua_pop(L, lua_gettop(L)-1);
-    return mp_unpack_full(L, 1, offset);
-}
-
-int mp_unpack_limit(lua_State *L) {
-    int limit = luaL_checkinteger(L, 2);
-    int offset = luaL_optinteger(L, 3, 0);
-    /* Variable pop because offset may not exist */
-    lua_pop(L, lua_gettop(L)-1);
-
-    return mp_unpack_full(L, limit, offset);
-}
-
-int mp_safe(lua_State *L) {
-    int argc, err, total_results;
-
-    argc = lua_gettop(L);
-
-    /* This adds our function to the bottom of the stack
-     * (the "call this function" position) */
-    lua_pushvalue(L, lua_upvalueindex(1));
-    lua_insert(L, 1);
-
-    err = lua_pcall(L, argc, LUA_MULTRET, 0);
-    total_results = lua_gettop(L);
-
-    if (!err) {
-        return total_results;
-    } else {
-        lua_pushnil(L);
-        lua_insert(L,-2);
-        return 2;
-    }
-}
-
-/* -------------------------------------------------------------------------- */
-const struct luaL_Reg cmds[] = {
-    {"pack", mp_pack},
-    {"unpack", mp_unpack},
-    {"unpack_one", mp_unpack_one},
-    {"unpack_limit", mp_unpack_limit},
-    {0}
-};
-
-int luaopen_create(lua_State *L) {
-    int i;
-    /* Manually construct our module table instead of
-     * relying on _register or _newlib */
-    lua_newtable(L);
-
-    for (i = 0; i < (sizeof(cmds)/sizeof(*cmds) - 1); i++) {
-        lua_pushcfunction(L, cmds[i].func);
-        lua_setfield(L, -2, cmds[i].name);
-    }
-
-    /* Add metadata */
-    lua_pushliteral(L, LUACMSGPACK_NAME);
-    lua_setfield(L, -2, "_NAME");
-    lua_pushliteral(L, LUACMSGPACK_VERSION);
-    lua_setfield(L, -2, "_VERSION");
-    lua_pushliteral(L, LUACMSGPACK_COPYRIGHT);
-    lua_setfield(L, -2, "_COPYRIGHT");
-    lua_pushliteral(L, LUACMSGPACK_DESCRIPTION);
-    lua_setfield(L, -2, "_DESCRIPTION");
-    return 1;
-}
-
-LUALIB_API int luaopen_cmsgpack(lua_State *L) {
-    luaopen_create(L);
-
-#if LUA_VERSION_NUM < 502
-    /* Register name globally for 5.1 */
-    lua_pushvalue(L, -1);
-    lua_setglobal(L, LUACMSGPACK_NAME);
+            break;
+        case 0xd3:  /* int 64 */
+            mp_cur_need(c,9);
+#if LUA_VERSION_NUM < 503
+            lua_pushnumber(L,
+#else
+                           lua_pushinteger(L,
 #endif
-
-    return 1;
-}
-
-LUALIB_API int luaopen_cmsgpack_safe(lua_State *L) {
-    int i;
-
-    luaopen_cmsgpack(L);
-
-    /* Wrap all functions in the safe handler */
-    for (i = 0; i < (sizeof(cmds)/sizeof(*cmds) - 1); i++) {
-        lua_getfield(L, -1, cmds[i].name);
-        lua_pushcclosure(L, mp_safe, 1);
-        lua_setfield(L, -2, cmds[i].name);
-    }
-
-#if LUA_VERSION_NUM < 502
-    /* Register name globally for 5.1 */
-    lua_pushvalue(L, -1);
-    lua_setglobal(L, LUACMSGPACK_SAFE_NAME);
-#endif
-
-    return 1;
-}
-
-/******************************************************************************
-* Copyright (C) 2012 Salvatore Sanfilippo.  All rights reserved.
-*
-* Permission is hereby granted, free of charge, to any person obtaining
-* a copy of this software and associated documentation files (the
-* "Software"), to deal in the Software without restriction, including
-* without limitation the rights to use, copy, modify, merge, publish,
-* distribute, sublicense, and/or sell copies of the Software, and to
-* permit persons to whom the Software is furnished to do so, subject to
-* the following conditions:
-*
-* The above copyright notice and this permission notice shall be
-* included in all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-******************************************************************************/
+                                           ((int64_t)c->p[1] << 56) |
+                                           ((int64_t)c->p[2] << 48) |
+                                           ((int64_t)c->p[3] << 40) |
+                                           ((int64_t)c->p[4] << 32) |
+                                           ((int64_t)c->p[5] << 24) |
+                                           ((int64_t)c->p[6] << 16) |
+                                           ((int64_t)c->p[7] << 8) |
+                                           (int64_t)c->p[8]);
+                           mp_cur_consume(c,9);
+                           break;
+                           case 0xc0:  /* nil */
+                           lua_pushnil(L);
+                           mp_cur_consume(c,1);
+                           break;
+                           case 0xc3:  /* true */
+                           lua_pushboolean(L,1);
+                           mp_cur_consume(c,1);
+                           break;
+                           case 0xc2:  /* false */
+                           lua_pushboolean(L,0);
+                           mp_cur_consume(c,1);
+                           break;
+                           case 0xca:  /* float */
+                           mp_cur_need(c,5);
+                           assert(sizeof(float) == 4);
+                           {
+                               float f;
+                               memcpy(&f,c->p+1,4);
+                               memrevifle(&f,4);
+                               lua_pushnumber(L,f);
+                               mp_cur_consume(c,5);
+                           }
+                           break;
+                           case 0xcb:  /* double */
+                           mp_cur_need(c,9);
+                           assert(sizeof(double) == 8);
+                           {
+                               double d;
+                               memcpy(&d,c->p+1,8);
+                               memrevifle(&d,8);
+                               lua_pushnumber(L,d);
+                               mp_cur_consume(c,9);
+                           }
+                           break;
+                           case 0xd9:  /* raw 8 */
+                           mp_cur_need(c,2);
+                           {
+                               size_t l = c->p[1];
+                               mp_cur_need(c,2+l);
+                               lua_pushlstring(L,(char*)c->p+2,l);
+                               mp_cur_consume(c,2+l);
+                           }
+                           break;
+                           case 0xda:  /* raw 16 */
+                           mp_cur_need(c,3);
+                           {
+                               size_t l = (c->p[1] << 8) | c->p[2];
+                               mp_cur_need(c,3+l);
+                               lua_pushlstring(L,(char*)c->p+3,l);
+                               mp_cur_consume(c,3+l);
+                           }
+                           break;
+                           case 0xdb:  /* raw 32 */
+                           mp_cur_need(c,5);
+                           {
+                               size_t l = ((size_t)c->p[1] << 24) |
+                               ((size_t)c->p[2] << 16) |
+                               ((size_t)c->p[3] << 8) |
+                               (size_t)c->p[4];
+                               mp_cur_consume(c,5);
+                               mp_cur_need(c,l);
+                               lua_pushlstring(L,(char*)c->p,l);
+                               mp_cur_consume(c,l);
+                           }
+                           break;
+                           case 0xdc:  /* array 16 */
+                           mp_cur_need(c,3);
+                           {
+                               size_t l = (c->p[1] << 8) | c->p[2];
+                               mp_cur_consume(c,3);
+                               mp_decode_to_lua_array(L,c,l);
+                           }
+                           break;
+                           case 0xdd:  /* array 32 */
+                           mp_cur_need(c,5);
+                           {
+                               size_t l = ((size_t)c->p[1] << 24) |
+                               ((size_t)c->p[2] << 16) |
+                               ((size_t)c->p[3] << 8) |
+                               (size_t)c->p[4];
+                               mp_cur_consume(c,5);
+                               mp_decode_to_lua_array(L,c,l);
+                           }
+                           break;
+                           case 0xde:  /* map 16 */
+                           mp_cur_need(c,3);
+                           {
+                               size_t l = (c->p[1] << 8) | c->p[2];
+                               mp_cur_consume(c,3);
+                               mp_decode_to_lua_hash(L,c,l);
+                           }
+                           break;
+                           case 0xdf:  /* map 32 */
+                           mp_cur_need(c,5);
+                           {
+                               size_t l = ((size_t)c->p[1] << 24) |
+                               ((size_t)c->p[2] << 16) |
+                               ((size_t)c->p[3] << 8) |
+                               (size_t)c->p[4];
+                               mp_cur_consume(c,5);
+                               mp_decode_to_lua_hash(L,c,l);
+                           }
+                           break;
+                           default:    /* types that can't be idenitified by first byte value. */
+                           if ((c->p[0] & 0x80) == 0) {   /* positive fixnum */
+                               lua_pushunsigned(L,c->p[0]);
+                               mp_cur_consume(c,1);
+                           } else if ((c->p[0] & 0xe0) == 0xe0) {  /* negative fixnum */
+                               lua_pushinteger(L,(signed char)c->p[0]);
+                               mp_cur_consume(c,1);
+                           } else if ((c->p[0] & 0xe0) == 0xa0) {  /* fix raw */
+                               size_t l = c->p[0] & 0x1f;
+                               mp_cur_need(c,1+l);
+                               lua_pushlstring(L,(char*)c->p+1,l);
+                               mp_cur_consume(c,1+l);
+                           } else if ((c->p[0] & 0xf0) == 0x90) {  /* fix map */
+                               size_t l = c->p[0] & 0xf;
+                               mp_cur_consume(c,1);
+                               mp_decode_to_lua_array(L,c,l);
+                           } else if ((c->p[0] & 0xf0) == 0x80) {  /* fix map */
+                               size_t l = c->p[0] & 0xf;
+                               mp_cur_consume(c,1);
+                               mp_decode_to_lua_hash(L,c,l);
+                           } else {
+                               c->err = MP_CUR_ERROR_BADFMT;
+                           }
+                           }
+                           }
+                           
+                           int mp_unpack_full(lua_State *L, int limit, int offset) {
+                               size_t len;
+                               const char *s;
+                               mp_cur c;
+                               int cnt; /* Number of objects unpacked */
+                               int decode_all = (!limit && !offset);
+                               
+                               s = luaL_checklstring(L,1,&len); /* if no match, exits */
+                               
+                               if (offset < 0 || limit < 0) /* requesting negative off or lim is invalid */
+                                   return luaL_error(L,
+                                                     "Invalid request to unpack with offset of %d and limit of %d.",
+                                                     offset, len);
+                               else if (offset > len)
+                                   return luaL_error(L,
+                                                     "Start offset %d greater than input length %d.", offset, len);
+                               
+                               if (decode_all) limit = INT_MAX;
+                               
+                               mp_cur_init(&c,(const unsigned char *)s+offset,len-offset);
+                               
+                               /* We loop over the decode because this could be a stream
+                                * of multiple top-level values serialized together */
+                               for(cnt = 0; c.left > 0 && cnt < limit; cnt++) {
+                                   mp_decode_to_lua_type(L,&c);
+                                   
+                                   if (c.err == MP_CUR_ERROR_EOF) {
+                                       return luaL_error(L,"Missing bytes in input.");
+                                   } else if (c.err == MP_CUR_ERROR_BADFMT) {
+                                       return luaL_error(L,"Bad data format in input.");
+                                   }
+                               }
+                               
+                               if (!decode_all) {
+                                   /* c->left is the remaining size of the input buffer.
+                                    * subtract the entire buffer size from the unprocessed size
+                                    * to get our next start offset */
+                                   int offset = len - c.left;
+                                   /* Return offset -1 when we have have processed the entire buffer. */
+                                   lua_pushinteger(L, c.left == 0 ? -1 : offset);
+                                   /* Results are returned with the arg elements still
+                                    * in place. Lua takes care of only returning
+                                    * elements above the args for us.
+                                    * In this case, we have one arg on the stack
+                                    * for this function, so we insert our first return
+                                    * value at position 2. */
+                                   lua_insert(L, 2);
+                                   cnt += 1; /* increase return count by one to make room for offset */
+                               }
+                               
+                               return cnt;
+                           }
+                           
+                           int mp_unpack(lua_State *L) {
+                               return mp_unpack_full(L, 0, 0);
+                           }
+                           
+                           int mp_unpack_one(lua_State *L) {
+                               int offset = luaL_optinteger(L, 2, 0);
+                               /* Variable pop because offset may not exist */
+                               lua_pop(L, lua_gettop(L)-1);
+                               return mp_unpack_full(L, 1, offset);
+                           }
+                           
+                           int mp_unpack_limit(lua_State *L) {
+                               int limit = luaL_checkinteger(L, 2);
+                               int offset = luaL_optinteger(L, 3, 0);
+                               /* Variable pop because offset may not exist */
+                               lua_pop(L, lua_gettop(L)-1);
+                               
+                               return mp_unpack_full(L, limit, offset);
+                           }
+                           
+                           int mp_safe(lua_State *L) {
+                               int argc, err, total_results;
+                               
+                               argc = lua_gettop(L);
+                               
+                               /* This adds our function to the bottom of the stack
+                                * (the "call this function" position) */
+                               lua_pushvalue(L, lua_upvalueindex(1));
+                               lua_insert(L, 1);
+                               
+                               err = lua_pcall(L, argc, LUA_MULTRET, 0);
+                               total_results = lua_gettop(L);
+                               
+                               if (!err) {
+                                   return total_results;
+                               } else {
+                                   lua_pushnil(L);
+                                   lua_insert(L,-2);
+                                   return 2;
+                               }
+                           }
+                           
+            /* -------------------------------------------------------------------------- */
+                           const struct luaL_Reg cmds[] = {
+                               {"pack", mp_pack},
+                               {"unpack", mp_unpack},
+                               {"unpack_one", mp_unpack_one},
+                               {"unpack_limit", mp_unpack_limit},
+                               {0}
+                           };
+                           
+                           int luaopen_create(lua_State *L) {
+                               int i;
+                               /* Manually construct our module table instead of
+                                * relying on _register or _newlib */
+                               lua_newtable(L);
+                               
+                               for (i = 0; i < (sizeof(cmds)/sizeof(*cmds) - 1); i++) {
+                                   lua_pushcfunction(L, cmds[i].func);
+                                   lua_setfield(L, -2, cmds[i].name);
+                               }
+                               
+                               /* Add metadata */
+                               lua_pushliteral(L, LUACMSGPACK_NAME);
+                               lua_setfield(L, -2, "_NAME");
+                               lua_pushliteral(L, LUACMSGPACK_VERSION);
+                               lua_setfield(L, -2, "_VERSION");
+                               lua_pushliteral(L, LUACMSGPACK_COPYRIGHT);
+                               lua_setfield(L, -2, "_COPYRIGHT");
+                               lua_pushliteral(L, LUACMSGPACK_DESCRIPTION);
+                               lua_setfield(L, -2, "_DESCRIPTION");
+                               return 1;
+                           }
+                           
+                           LUALIB_API int luaopen_cmsgpack(lua_State *L) {
+                               // luaopen_create(L);
+                               luaL_register(L, "cmsgpack", cmds);
+                               // #if LUA_VERSION_NUM < 502
+                               // /* Register name globally for 5.1 */
+                               // lua_pushvalue(L, -1);
+                               // lua_setglobal(L, LUACMSGPACK_NAME);
+                               // #endif
+                               
+                               return 1;
+                           }
+            
+            // LUALIB_API int luaopen_cmsgpack_safe(lua_State *L) {
+            // int i;
+            
+            // luaopen_cmsgpack(L);
+            
+            // /* Wrap all functions in the safe handler */
+            // for (i = 0; i < (sizeof(cmds)/sizeof(*cmds) - 1); i++) {
+            // lua_getfield(L, -1, cmds[i].name);
+            // lua_pushcclosure(L, mp_safe, 1);
+            // lua_setfield(L, -2, cmds[i].name);
+            // }
+            
+            // #if LUA_VERSION_NUM < 502
+            // /* Register name globally for 5.1 */
+            // lua_pushvalue(L, -1);
+            // lua_setglobal(L, LUACMSGPACK_SAFE_NAME);
+            // #endif
+            
+            // return 1;
+            // }
+            
+            /******************************************************************************
+             * Copyright (C) 2012 Salvatore Sanfilippo.  All rights reserved.
+             *
+             * Permission is hereby granted, free of charge, to any person obtaining
+             * a copy of this software and associated documentation files (the
+             * "Software"), to deal in the Software without restriction, including
+             * without limitation the rights to use, copy, modify, merge, publish,
+             * distribute, sublicense, and/or sell copies of the Software, and to
+             * permit persons to whom the Software is furnished to do so, subject to
+             * the following conditions:
+             *
+             * The above copyright notice and this permission notice shall be
+             * included in all copies or substantial portions of the Software.
+             *
+             * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+             * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+             * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+             * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+             * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+             * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+             * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+             ******************************************************************************/

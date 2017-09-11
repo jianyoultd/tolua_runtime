@@ -3,6 +3,7 @@
 /Users/zernmal/web/tolua_runtime/iOS/build/tolua.build/Release-iphoneos/tolua.build/Objects-normal/arm64/udp.o
 /Users/zernmal/web/tolua_runtime/iOS/build/tolua.build/Release-iphoneos/tolua.build/Objects-normal/arm64/except.o
 /Users/zernmal/web/tolua_runtime/iOS/build/tolua.build/Release-iphoneos/tolua.build/Objects-normal/arm64/lpeg.o
+/Users/zernmal/web/tolua_runtime/iOS/build/tolua.build/Release-iphoneos/tolua.build/Objects-normal/arm64/lua_cmsgpack.o
 /Users/zernmal/web/tolua_runtime/iOS/build/tolua.build/Release-iphoneos/tolua.build/Objects-normal/arm64/lua_cjson.o
 /Users/zernmal/web/tolua_runtime/iOS/build/tolua.build/Release-iphoneos/tolua.build/Objects-normal/arm64/struct.o
 /Users/zernmal/web/tolua_runtime/iOS/build/tolua.build/Release-iphoneos/tolua.build/Objects-normal/arm64/tolua-81B774E523FFB654.o
