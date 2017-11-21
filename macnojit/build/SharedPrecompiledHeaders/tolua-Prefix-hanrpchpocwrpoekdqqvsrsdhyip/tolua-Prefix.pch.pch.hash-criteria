@@ -1,0 +1,24 @@
+-x
+c
+-arch
+i386
+-std=gnu99
+-gmodules
+-fpascal-strings
+-Os
+-isysroot
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk
+-fasm-blocks
+-mmacosx-version-min=10.8
+-g
+-iquote
+-iquote
+-I/Users/zernmal/lua-space/tolua_runtime/macnojit/build/Release/include
+-I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include
+-I/Users/zernmal/lua-space/tolua_runtime/macnojit/lua
+-I/Users/zernmal/lua-space/tolua_runtime/macnojit
+-F/Users/zernmal/lua-space/tolua_runtime/macnojit/build/Release
+i386-apple-darwin17.2.0
+"4.2.1 Compatible Apple LLVM 9.0.0 (clang-900.0.38)"
+SDK_PRODUCT_BUILD_VERSION=17B41
+17B41

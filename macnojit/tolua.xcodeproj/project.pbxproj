@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		596103331FC420A1001E060C /* lua_cmsgpack.c in Sources */ = {isa = PBXBuildFile; fileRef = 598CA0301F3C4942003060E8 /* lua_cmsgpack.c */; };
 		596BAC931F305431004B4590 /* lsproto.c in Sources */ = {isa = PBXBuildFile; fileRef = 596BAC8F1F305431004B4590 /* lsproto.c */; };
 		596BAC941F305431004B4590 /* sproto.c in Sources */ = {isa = PBXBuildFile; fileRef = 596BAC911F305431004B4590 /* sproto.c */; };
-		598CA0311F3C4942003060E8 /* lua_cmsgpack.c in Sources */ = {isa = PBXBuildFile; fileRef = 598CA0301F3C4942003060E8 /* lua_cmsgpack.c */; };
 		840092821CCF406200F89A56 /* auxiliar.c in Sources */ = {isa = PBXBuildFile; fileRef = 840092611CCF406200F89A56 /* auxiliar.c */; };
 		840092831CCF406200F89A56 /* buffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 840092631CCF406200F89A56 /* buffer.c */; };
 		840092841CCF406200F89A56 /* compat.c in Sources */ = {isa = PBXBuildFile; fileRef = 840092651CCF406200F89A56 /* compat.c */; };
@@ -429,12 +429,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				596103331FC420A1001E060C /* lua_cmsgpack.c in Sources */,
 				84EF23A81C4CCD3F0093A49A /* lundump.c in Sources */,
 				84F8B8B51C45679700AE9B8F /* struct.c in Sources */,
 				842A59A91C85B76100EA2815 /* fpconv.c in Sources */,
 				8400928F1CCF406200F89A56 /* udp.c in Sources */,
 				84ED5C081C4D0749006965FF /* bit.c in Sources */,
-				598CA0311F3C4942003060E8 /* lua_cmsgpack.c in Sources */,
 				596BAC931F305431004B4590 /* lsproto.c in Sources */,
 				84EF23991C4CCD3F0093A49A /* lmathlib.c in Sources */,
 				840092871CCF406200F89A56 /* io.c in Sources */,

@@ -2,6 +2,7 @@
 xcuserdata
 project.xcworkspace
 .DS_Store
+.vscode/
 
 # Object files
 *.o
